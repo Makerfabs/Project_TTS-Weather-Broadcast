@@ -12,6 +12,7 @@ Create Date:	2020/7/1
 Note:
 */
 ```
+[youtube:TTS-Weather-Broadcast](https://youtu.be/00nAEQKYFV4)
 
 ![1](https://github.com/Makerfabs/Project_TTS-Weather-Broadcast/blob/master/md_pic/1.JPG)
 
