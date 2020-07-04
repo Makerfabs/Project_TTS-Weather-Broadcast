@@ -68,6 +68,7 @@ res = urequests.get(url)
 ![c1](https://github.com/Makerfabs/Project_TTS-Weather-Broadcast/blob/master/md_pic/c1.png)
 
 - Right click weather.py and set to Default Run to boot automatically.
+
 ![c2](https://github.com/Makerfabs/Project_TTS-Weather-Broadcast/blob/master/md_pic/c2.png)
 
 - Due to the added function of WiFi connection, the boot will be slow, please pay attention to the information returned by the serial port, which contains the IP address ESP32 got when connected to WiFi.
@@ -127,13 +128,16 @@ network config: ('192.168.1.137', '255.255.255.0', '192.168.1.1', '192.168.1.1')
 
 - The serial monitor displays the parsed string on the LCD screen.
 
+
 ![c3](https://github.com/Makerfabs/Project_TTS-Weather-Broadcast/blob/master/md_pic/c3.JPG)
+
 
 ```c++
 Shenzhen weather is Overcast temperature is 30
 ```
 
 - Plug the 3.5mm connector of the stereo or earphone into the audio outlet.
+
 
 ![c4](https://github.com/Makerfabs/Project_TTS-Weather-Broadcast/blob/master/md_pic/c4.JPG)
 
