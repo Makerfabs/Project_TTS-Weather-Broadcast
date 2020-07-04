@@ -36,13 +36,15 @@ class audio:
         
     def close(self):
         self.audio_out.deinit()
+        gc.collect()
         
     def say_sentance(self,text):
         list = text.split()
         print(list)
         for word in list:
-            print(word)
+            #print(word)
             self.say(word)
+
 
 
 
