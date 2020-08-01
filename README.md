@@ -12,8 +12,9 @@ Create Date:	2020/7/1
 Note:
 */
 ```
+[youtube:TTS-Weather-Broadcast](https://youtu.be/00nAEQKYFV4)
 
-![1](https://github.com/Makerfabs/Project_TTS-Weather-Broadcast/tree/master/md_pic/1.JPG)
+![1](https://github.com/Makerfabs/Project_TTS-Weather-Broadcast/blob/master/md_pic/1.JPG)
 
 [toc]
 
@@ -44,7 +45,7 @@ Through the MicroPython TTS text-to-speech module, the weather API on the networ
 - Connect MakePython ESP32 to your PC, open uPyCraft, and select connect to the serial port.
 - If you have not burned Firmware before or for other reasons, you will be prompted to burn Firmware. Board Choose ESP32, BURN_addr Choose 0x1000,erase_flash Choose Yes,com Choose the corresponding port number.
 
-![c0](https://github.com/Makerfabs/Project_TTS-Weather-Broadcast/tree/master/md_pic/c0.png)
+![c0](https://github.com/Makerfabs/Project_TTS-Weather-Broadcast/blob/master/md_pic/c0.png)
 
 - **Plug ESP32 and Audio expansion boards together after burning. Be sure to plug them together after burning or the firmware will not burn.** 
 - Change webserver.py to change the sSID and passward to the password for your wireless router.
@@ -65,10 +66,11 @@ res = urequests.get(url)
 
 - Save the changes and download all python programs ending in.py from the LoraGate folder to ESP32.
 
-![c1](https://github.com/Makerfabs/Project_TTS-Weather-Broadcast/tree/master/md_pic/c1.png)
+![c1](https://github.com/Makerfabs/Project_TTS-Weather-Broadcast/blob/master/md_pic/c1.png)
 
 - Right click weather.py and set to Default Run to boot automatically.
-![c2](https://github.com/Makerfabs/Project_TTS-Weather-Broadcast/tree/master/md_pic/c2.png)
+
+![c2](https://github.com/Makerfabs/Project_TTS-Weather-Broadcast/blob/master/md_pic/c2.png)
 
 - Due to the added function of WiFi connection, the boot will be slow, please pay attention to the information returned by the serial port, which contains the IP address ESP32 got when connected to WiFi.
 
@@ -127,7 +129,9 @@ network config: ('192.168.1.137', '255.255.255.0', '192.168.1.1', '192.168.1.1')
 
 - The serial monitor displays the parsed string on the LCD screen.
 
-![c3](https://github.com/Makerfabs/Project_TTS-Weather-Broadcast/tree/master/md_pic/c3.JPG)
+
+![c3](https://github.com/Makerfabs/Project_TTS-Weather-Broadcast/blob/master/md_pic/c3.JPG)
+
 
 ```c++
 Shenzhen weather is Overcast temperature is 30
@@ -135,7 +139,8 @@ Shenzhen weather is Overcast temperature is 30
 
 - Plug the 3.5mm connector of the stereo or earphone into the audio outlet.
 
-![c4](https://github.com/Makerfabs/Project_TTS-Weather-Broadcast/tree/master/md_pic/c4.JPG)
+
+![c4](https://github.com/Makerfabs/Project_TTS-Weather-Broadcast/blob/master/md_pic/c4.JPG)
 
 - Real-time weather will be played regularly.
 
