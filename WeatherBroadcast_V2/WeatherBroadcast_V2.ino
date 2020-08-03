@@ -27,13 +27,16 @@ const char *password = "20160704";
 
 const int Pin_mute = 35;
 
+//Weather
+String wind_txt[] = {"north","northeast","east","southeast","south","southwest","west","northwest"};
+
 void setup()
 {
     pinMode(Pin_mute, INPUT_PULLUP);
 
     Serial.begin(115200);
 
-    //LCD
+    //LCD init
     Wire.begin(MAKEPYTHON_ESP32_SDA, MAKEPYTHON_ESP32_SCL);
     // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
     if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
@@ -45,6 +48,7 @@ void setup()
     display.clearDisplay();
     logoshow();
 
+    //Wifi init
     Serial.printf("Connecting to %s ", ssid);
     WiFi.begin(ssid, password);
     while (WiFi.status() != WL_CONNECTED)
@@ -55,6 +59,7 @@ void setup()
     Serial.println(" CONNECTED");
     lcd_text("WIFI OK");
 
+    //Audio init
     audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
     audio.setVolume(21); // 0...21
     Serial.println("Ready to tts");
@@ -68,6 +73,7 @@ uint button_time = 0;
 void loop()
 {
     audio.loop();
+    /*
     if (Serial.available())
     { // put streamURL in serial monitor
         audio.stopSong();
@@ -80,6 +86,7 @@ void loop()
         }
         log_i("free heap=%i", ESP.getFreeHeap());
     }
+    */
     if (millis() - button_time > 300)
     {
         if (digitalRead(Pin_mute) == 0)
@@ -102,6 +109,7 @@ String weather_request()
     Serial.print("[HTTP] begin...\n");
     // configure traged server and url
 
+    //persional api,please change to yourself
     http.begin("https://free-api.heweather.net/s6/weather/now?location=shenzhen&key=2d63e6d9a95c4e8f8d3f65d0b5bcdf7f&lang=en");
 
     Serial.print("[HTTP] GET...\n");
@@ -128,9 +136,9 @@ String weather_request()
             String cond_txt = doc["HeWeather6"][0]["now"]["cond_txt"];
             String tmp = doc["HeWeather6"][0]["now"]["tmp"];
             String hum = doc["HeWeather6"][0]["now"]["hum"];
-            String wind_dir = doc["HeWeather6"][0]["now"]["wind_dir"];
-            lcd_weather(cond_txt, tmp, hum, wind_dir);
-            text = "Shenzhen, " + cond_txt + ", " + tmp + " centigrade, " + wind_dir + " wind,relative humidity " + hum + " percent.";
+            int wind_deg = doc["HeWeather6"][0]["now"]["wind_deg"];
+            lcd_weather(cond_txt, tmp, hum, wind_txt[wind_deg/45]);
+            text = "Shenzhen, " + cond_txt + ", " + tmp + " centigrade, " + wind_txt[wind_deg/45] + " wind,relative humidity " + hum + " percent.";
             //text = "深圳，雨，28摄氏度，西北风，相对湿度百分之四十。";
         }
     }
@@ -142,7 +150,7 @@ String weather_request()
     http.end();
     return text;
 }
-
+ 
 void lcd_weather(String cond_txt, String tmp, String hum, String wind_dir)
 {
     display.clearDisplay();

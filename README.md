@@ -1,20 +1,21 @@
----
-typora-root-url: md_pic
----
 
 # MicroPython TTS Weather broadcast
 
 ```c++
 /*
-Version:		V1.0
+Version:		V2.0
 Author:			Vincent
 Create Date:	2020/7/1
 Note:
+	2020/8/3 V2:
+	1,Python's TTS is a local operation, with poor effect. This version realizes voice broadcasting through arduino's TTS service of acquiring Google cloud.
+	2,3D printing shells designed for MakePython ESP32 and MakePython Audio are provided.
+	3,The code was completely refacted. The previous README was renamed to oldVersion_v1_readme.
 */
 ```
 [youtube:TTS-Weather-Broadcast](https://youtu.be/00nAEQKYFV4)
 
-![1](https://github.com/Makerfabs/Project_TTS-Weather-Broadcast/blob/master/md_pic/1.JPG)
+![1](md_pic/main.jpg)
 
 [toc]
 
@@ -30,6 +31,8 @@ Note:
 
 Through the MicroPython TTS text-to-speech module, the weather API on the network can be acquired through wifi, and the real-time weather can be broadcast by voice. Download the code and connect with the stereo, you will get a customized intelligent weather announcer!
 
+![oversee](md_pic/oversee.jpg)
+
 
 ## Equipment list
 
@@ -40,52 +43,53 @@ Through the MicroPython TTS text-to-speech module, the weather API on the networ
 
 # STEPS
 
-## 1 Download the code
+## Prepare And Burn
 
-- Connect MakePython ESP32 to your PC, open uPyCraft, and select connect to the serial port.
-- If you have not burned Firmware before or for other reasons, you will be prompted to burn Firmware. Board Choose ESP32, BURN_addr Choose 0x1000,erase_flash Choose Yes,com Choose the corresponding port number.
+**If you have any questions，such as how to install the development board, how to download the code, how to install the library. Please refer to :[Makerfabs_FAQ](https://github.com/Makerfabs/Makerfabs_FAQ)**
 
-![c0](https://github.com/Makerfabs/Project_TTS-Weather-Broadcast/blob/master/md_pic/c0.png)
+- Install board : esp32 .
+- Install library : Adafruit SSD1306 and dependent libraries.
+- Install zip library : [ESP32-audioI2S](https://github.com/schreibfaul1/ESP32-audioI2S)("Audio.h")
+- Open file "Project_TTS-Weather-Broadcast/WeatherBroadcast_V2/WeatherBroadcast_V2.ino"
 
-- **Plug ESP32 and Audio expansion boards together after burning. Be sure to plug them together after burning or the firmware will not burn.** 
-- Change webserver.py to change the sSID and passward to the password for your wireless router.
-
-
-```pyth
-SSID = "Makerfabs"      #Modify here with SSID
-PASSWORD = "20160704"   #Modify here with PWD
-```
-
-- (optional) to replace the url with their own API interface, the source of the interface is the author apply for the trial of the API, [heweather](https://www.heweather.com/) is a free API, there may not be able to normal access. Makerfabs API trial is not available, please make your own application, application API example behind.
-
-```python
-#request weather api
-url = "https://free-api.heweather.net/s6/weather/now?location=shenzhen&key=2d63e6d9a95c4e8f8d3f65d0b5bcdf7f&lang=en"
-res = urequests.get(url)
-```
-
-- Save the changes and download all python programs ending in.py from the LoraGate folder to ESP32.
-
-![c1](https://github.com/Makerfabs/Project_TTS-Weather-Broadcast/blob/master/md_pic/c1.png)
-
-- Right click weather.py and set to Default Run to boot automatically.
-
-![c2](https://github.com/Makerfabs/Project_TTS-Weather-Broadcast/blob/master/md_pic/c2.png)
-
-- Due to the added function of WiFi connection, the boot will be slow, please pay attention to the information returned by the serial port, which contains the IP address ESP32 got when connected to WiFi.
+- Change the time WiFi ssid and password.
 
 ```c++
-[0;32mI (4066) network: CONNECTED[0m
-[0;32mI (5296) event: sta ip: 192.168.1.137, mask: 255.255.255.0, gw: 192.168.1.1[0m
-[0;32mI (5296) network: GOT_IP[0m
-
-
-network config: ('192.168.1.137', '255.255.255.0', '192.168.1.1', '192.168.1.1')
+//WIFI
+const char *ssid = "Makerfabs";
+const char *password = "20160704";
 ```
 
-- According to serial port information, the IP of this node in LAN is 192.168.1.137.
+- Upload to esp32.
 
-- After successful networking, the weather API will be automatically requested, and the interface of this call will return a string of weather JSON.
+
+- **~~ATTENTION !!! Plug ESP32 and Audio expansion boards together after burning. Be sure to plug them together after burning or the firmware will not burn.~~** 
+- **V1.1 Add:	MicroPython Audio can be downloaded without unplugging. When uploading the program, please rotate the switch next to the 3.5mm Audio interface to the Audio socket.**
+
+![Without_plug](E:/code/Project_MakePython_Audio_Music/md_pic/Without_plug.png)
+
+- Plug the stereo or earphone into a 3.5mm audio jack.
+
+## How to use TTS Weather broadcast
+
+- Set Wifi password.
+- Press MUTE and the screen reacts to the weather. Wait a few seconds for the voice to announce the weather.
+- Lower side switch, left and right for next song, Previous.Press inward to pause.
+- The switch on the left, volume up and down.Press in to mute.
+
+![image-20200708134131231](E:/code/Project_MakePython_Audio_Music/md_pic/button_control.png)
+
+# How to get a weather API?
+
+Different regions may have different network restrictions. Since I can't run VPN on ESP32, and I don't have a wireless router with this function, I can't use API like Google, so I chose a local Weather API provider in China:
+
+## [heweather](https://github.com/heweather)
+
+You can on Google looking for a fee or free API interface, most of time limits or individual users with a number of free API interface. The remaining is according to the use of API tutorial, generally is registered, choose the required interface, and then give you a key used to access the service chamber of commerce. After can replace your url and analytic function in this project.
+
+I don't guarantee that the interface will be accessible by the time you see this, so it's best to simply replace the API you know you can use and modify the parse_HTML () function in weather.py to parse it properly.
+
+This is a reponse example:
 
 ```c++
 {
@@ -102,21 +106,21 @@ network config: ('192.168.1.137', '255.255.255.0', '192.168.1.1', '192.168.1.1')
                 "tz":"+8.00"
             },
             "update":{
-                "loc":"2020-07-01 16:27",
-                "utc":"2020-07-01 08:27"
+                "loc":"2020-08-03 10:12",
+                "utc":"2020-08-03 02:12"
             },
             "status":"ok",
             "now":{
-                "cloud":"98",
-                "cond_code":"104",
-                "cond_txt":"Overcast",
-                "fl":"34",
-                "hum":"72",
-                "pcpn":"0.0",
-                "pres":"995",
-                "tmp":"30",
-                "vis":"8",
-                "wind_deg":"171",
+                "cloud":"97",
+                "cond_code":"399",
+                "cond_txt":"Rain",
+                "fl":"30",
+                "hum":"97",
+                "pcpn":"1.0",
+                "pres":"997",
+                "tmp":"26",
+                "vis":"6",
+                "wind_deg":"183",
                 "wind_dir":"S",
                 "wind_sc":"2",
                 "wind_spd":"6"
@@ -124,63 +128,14 @@ network config: ('192.168.1.137', '255.255.255.0', '192.168.1.1', '192.168.1.1')
         }
     ]
 }
-
 ```
 
-- The serial monitor displays the parsed string on the LCD screen.
+# 3D Printer Box
 
+We designed a simple 3D-printed case. Don't need support.
 
-![c3](https://github.com/Makerfabs/Project_TTS-Weather-Broadcast/blob/master/md_pic/c3.JPG)
+[STL File](https://github.com/Makerfabs/Project_MakePython_Audio_Music/)
 
+![3d1](md_pic/3d1.png)
 
-```c++
-Shenzhen weather is Overcast temperature is 30
-```
-
-- Plug the 3.5mm connector of the stereo or earphone into the audio outlet.
-
-
-![c4](https://github.com/Makerfabs/Project_TTS-Weather-Broadcast/blob/master/md_pic/c4.JPG)
-
-- Real-time weather will be played regularly.
-
-## 2 Python Explain
-
-### 2.1 ssd1306.py
-
-- Ssd1306 led screen driver.
-
-### 2.2 display_ssd1306_i2c.py
-
-- Ssd1306 LED screen based on I2C basic display library.
-- Text display function.
-- Image display function.
-
-### 2.3 webserver.py
-
-- Wifi initialization and connection.
-
-### 2.4 urequest.py
-
-- Network request library for MicroPython
-- Used to send a GET request to access the weather API.
-
-### 2.5 weather.py
-
-- main()
-- Parse api responce.
-
-### 2.6 audio_set.py
-
-- TTS module initialization
-- Break down long sentences into words and read them aloud.
-
-# How to get a weather API?
-
-Different regions may have different network restrictions. Since I can't run VPN on ESP32, and I don't have a wireless router with this function, I can't use API like Google, so I chose a local Weather API provider in China:
-
-[heweather](https://github.com/heweather)
-
-You can on Google looking for a fee or free API interface, most of time limits or individual users with a number of free API interface. The remaining is according to the use of API tutorial, generally is registered, choose the required interface, and then give you a key used to access the service chamber of commerce. After can replace your url and analytic function in this project.
-
-I don't guarantee that the interface will be accessible by the time you see this, so it's best to simply replace the API you know you can use and modify the parse_HTML () function in weather.py to parse it properly.
+![3d1](md_pic/3d2.png)
