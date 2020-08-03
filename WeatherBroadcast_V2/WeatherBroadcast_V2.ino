@@ -2,10 +2,21 @@
 #include "MySpeech.h"
 #include <ArduinoJson.h>
 #include <HTTPClient.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 
 #define I2S_DOUT 27
 #define I2S_BCLK 26
 #define I2S_LRC 25
+
+//SSD1306
+#define MAKEPYTHON_ESP32_SDA 4
+#define MAKEPYTHON_ESP32_SCL 5
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+#define OLED_RESET -1    // Reset pin # (or -1 if sharing Arduino reset pin)
+
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 //Audio audio;
 Speech audio;
@@ -21,6 +32,19 @@ void setup()
     pinMode(Pin_mute, INPUT_PULLUP);
 
     Serial.begin(115200);
+
+    //LCD
+    Wire.begin(MAKEPYTHON_ESP32_SDA, MAKEPYTHON_ESP32_SCL);
+    // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+    if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
+    { // Address 0x3C for 128x32
+        Serial.println(F("SSD1306 allocation failed"));
+        for (;;)
+            ; // Don't proceed, loop forever
+    }
+    display.clearDisplay();
+    logoshow();
+
     Serial.printf("Connecting to %s ", ssid);
     WiFi.begin(ssid, password);
     while (WiFi.status() != WL_CONNECTED)
@@ -29,12 +53,14 @@ void setup()
         Serial.print(".");
     }
     Serial.println(" CONNECTED");
+    lcd_text("WIFI OK");
 
     audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
     audio.setVolume(21); // 0...21
     Serial.println("Ready to tts");
+    lcd_text("Ready to tts");
 
-    audio.connecttospeech("Already.", "en");
+    //audio.connecttospeech("Already.", "en");
 }
 
 uint button_time = 0;
@@ -60,14 +86,13 @@ void loop()
         {
             Serial.println("Pin_mute");
             String text = weather_request();
-            audio.connecttospeech(text, "zh-CN");
-            audio.connecttospeech("Shenzhen, rain, 28 degrees Celsius, northwest wind, relative humidity 40 percent.", "en");
+            audio.connecttospeech(text, "en");
+            //audio.connecttospeech(text, "zh-CN");
+            //audio.connecttospeech("Shenzhen, rain, 28 degrees Celsius, northwest wind, relative humidity 40 percent.", "en");
             button_time = millis();
         }
     }
 }
-
-
 
 String weather_request()
 {
@@ -77,7 +102,7 @@ String weather_request()
     Serial.print("[HTTP] begin...\n");
     // configure traged server and url
 
-    http.begin("https://free-api.heweather.net/s6/weather/now?location=shenzhen&key=2d63e6d9a95c4e8f8d3f65d0b5bcdf7f&lang=enl");
+    http.begin("https://free-api.heweather.net/s6/weather/now?location=shenzhen&key=2d63e6d9a95c4e8f8d3f65d0b5bcdf7f&lang=en");
 
     Serial.print("[HTTP] GET...\n");
     // start connection and send HTTP header
@@ -100,16 +125,13 @@ String weather_request()
             deserializeJson(doc, payload);
             JsonObject obj = doc.as<JsonObject>();
 
-            String cid = doc["HeWeather6"][0]["basic"]["cid"];
-
-            Serial.println(cid);
-
-            String location = doc["HeWeather6"][0]["basic"]["location"];
-
-            Serial.println(location);
-
-            text = cid + location;
-            text = "深圳，雨，28摄氏度，西北风，相对湿度百分之四十。";
+            String cond_txt = doc["HeWeather6"][0]["now"]["cond_txt"];
+            String tmp = doc["HeWeather6"][0]["now"]["tmp"];
+            String hum = doc["HeWeather6"][0]["now"]["hum"];
+            String wind_dir = doc["HeWeather6"][0]["now"]["wind_dir"];
+            lcd_weather(cond_txt, tmp, hum, wind_dir);
+            text = "Shenzhen, " + cond_txt + ", " + tmp + " centigrade, " + wind_dir + " wind,relative humidity " + hum + " percent.";
+            //text = "深圳，雨，28摄氏度，西北风，相对湿度百分之四十。";
         }
     }
     else
@@ -121,8 +143,48 @@ String weather_request()
     return text;
 }
 
+void lcd_weather(String cond_txt, String tmp, String hum, String wind_dir)
+{
+    display.clearDisplay();
 
+    display.setTextSize(2);              // Normal 1:1 pixel scale
+    display.setTextColor(SSD1306_WHITE); // Draw white text
+    display.setCursor(0, 0);             // Start at top-left corner
+    display.println(cond_txt);
+    display.setCursor(0, 20); // Start at top-left corner
+    display.println(tmp + " C " + hum + "%");
+    display.setCursor(0, 40); // Start at top-left corner
+    display.println("Wind:" + wind_dir);
+    display.display();
+}
 
+void logoshow(void)
+{
+    display.clearDisplay();
+
+    display.setTextSize(2);              // Normal 1:1 pixel scale
+    display.setTextColor(SSD1306_WHITE); // Draw white text
+    display.setCursor(0, 0);             // Start at top-left corner
+    display.println(F("Weather"));
+    display.setCursor(0, 20); // Start at top-left corner
+    display.println(F("Broadcast"));
+    display.setCursor(0, 40); // Start at top-left corner
+    display.println(F("TTS V2"));
+    display.display();
+    delay(2000);
+}
+
+void lcd_text(String text)
+{
+    display.clearDisplay();
+
+    display.setTextSize(2);              // Normal 1:1 pixel scale
+    display.setTextColor(SSD1306_WHITE); // Draw white text
+    display.setCursor(0, 0);             // Start at top-left corner
+    display.println(text);
+    display.display();
+    delay(500);
+}
 
 // optional
 void audio_info(const char *info)
