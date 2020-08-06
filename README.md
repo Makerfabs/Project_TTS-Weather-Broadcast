@@ -66,7 +66,7 @@ const char *password = "20160704";
 - **~~ATTENTION !!! Plug ESP32 and Audio expansion boards together after burning. Be sure to plug them together after burning or the firmware will not burn.~~** 
 - **V1.1 Add:	MicroPython Audio can be downloaded without unplugging. When uploading the program, please rotate the switch next to the 3.5mm Audio interface to the Audio socket.**
 
-![Without_plug](E:/code/Project_MakePython_Audio_Music/md_pic/Without_plug.png)
+![Without_plug](md_pic/Without_plug.png)
 
 - Plug the stereo or earphone into a 3.5mm audio jack.
 
@@ -77,7 +77,7 @@ const char *password = "20160704";
 - Lower side switch, left and right for next song, Previous.Press inward to pause.
 - The switch on the left, volume up and down.Press in to mute.
 
-![image-20200708134131231](E:/code/Project_MakePython_Audio_Music/md_pic/button_control.png)
+![image-20200708134131231](md_pic/button_control.png)
 
 # How to get a weather API?
 
