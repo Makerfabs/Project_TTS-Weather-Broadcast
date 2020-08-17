@@ -5,6 +5,8 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
+//#define SR505 17
+
 #define I2S_DOUT 27
 #define I2S_BCLK 26
 #define I2S_LRC 25
@@ -28,11 +30,14 @@ const char *password = "20160704";
 const int Pin_mute = 35;
 
 //Weather
-String wind_txt[] = {"north","northeast","east","southeast","south","southwest","west","northwest"};
+String wind_txt[] = {"north", "northeast", "east", "southeast", "south", "southwest", "west", "northwest"};
 
 void setup()
 {
     pinMode(Pin_mute, INPUT_PULLUP);
+#ifdef SR505
+    pinMode(SR505, INPUT_PULLDOWN);
+#endif
 
     Serial.begin(115200);
 
@@ -99,6 +104,19 @@ void loop()
             button_time = millis();
         }
     }
+#ifdef SR505
+    //infrared detection
+    if (millis() - button_time > 15000)
+    {
+        if (digitalRead(SR505) == 1)
+        {
+            Serial.println("SR505");
+            String text = weather_request();
+            audio.connecttospeech(text, "en");
+            button_time = millis();
+        }
+    }
+#endif
 }
 
 String weather_request()
@@ -137,8 +155,8 @@ String weather_request()
             String tmp = doc["HeWeather6"][0]["now"]["tmp"];
             String hum = doc["HeWeather6"][0]["now"]["hum"];
             int wind_deg = doc["HeWeather6"][0]["now"]["wind_deg"];
-            lcd_weather(cond_txt, tmp, hum, wind_txt[wind_deg/45]);
-            text = "Shenzhen, " + cond_txt + ", " + tmp + " centigrade, " + wind_txt[wind_deg/45] + " wind,relative humidity " + hum + " percent.";
+            lcd_weather(cond_txt, tmp, hum, wind_txt[wind_deg / 45]);
+            text = "Shenzhen, " + cond_txt + ", " + tmp + " centigrade, " + wind_txt[wind_deg / 45] + " wind,relative humidity " + hum + " percent.";
             //text = "深圳，雨，28摄氏度，西北风，相对湿度百分之四十。";
         }
     }
@@ -150,7 +168,7 @@ String weather_request()
     http.end();
     return text;
 }
- 
+
 void lcd_weather(String cond_txt, String tmp, String hum, String wind_dir)
 {
     display.clearDisplay();
