@@ -5,6 +5,8 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
+#include "weather_icon.h"
+
 //#define SR505 17
 
 #define I2S_DOUT 27
@@ -52,6 +54,14 @@ void setup()
     }
     display.clearDisplay();
     logoshow();
+
+    /*
+    //Screen dirction
+    display.setRotation(2);
+
+    //Weather icon
+    draw_weather(2);
+    */
 
     //Wifi init
     Serial.printf("Connecting to %s ", ssid);
@@ -210,6 +220,30 @@ void lcd_text(String text)
     display.println(text);
     display.display();
     delay(500);
+}
+
+void draw_weather(int a)
+{
+    const unsigned char *icon;
+    switch (a)
+    {
+    case 0:
+        icon = sun;
+        break;
+    case 1:
+        icon = rain;
+        break;
+    case 2:
+        icon = cloud;
+        break;
+    default:
+        icon = sun;
+    }
+    display.clearDisplay();
+
+    display.drawBitmap(0, 0, icon, ICON_W, ICON_H, 1);
+    display.display();
+    delay(1000);
 }
 
 // optional
