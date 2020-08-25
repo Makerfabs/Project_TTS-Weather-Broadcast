@@ -7,7 +7,7 @@
 
 #include "weather_icon.h"
 
-//#define SR505 17
+#define SR505 15
 
 #define I2S_DOUT 27
 #define I2S_BCLK 26
@@ -26,7 +26,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 Speech audio;
 
 //WIFI
-const char *ssid = "Makerfabs";
+const char *ssid = "Makerfabs"*;
 const char *password = "20160704";
 
 const int Pin_mute = 35;
@@ -106,12 +106,12 @@ void loop()
     {
         if (digitalRead(Pin_mute) == 0)
         {
-            Serial.println("Pin_mute");
+          /*  Serial.println("Pin_mute");
             String text = weather_request();
             audio.connecttospeech(text, "en");
             //audio.connecttospeech(text, "zh-CN");
             //audio.connecttospeech("Shenzhen, rain, 28 degrees Celsius, northwest wind, relative humidity 40 percent.", "en");
-            button_time = millis();
+            button_time = millis();  */
         }
     }
 #ifdef SR505
@@ -182,16 +182,55 @@ String weather_request()
 void lcd_weather(String cond_txt, String tmp, String hum, String wind_dir)
 {
     display.clearDisplay();
-
+    
+   if(cond_txt == "Sunny")
+      {
+        draw_weather(0);
+        display.setTextSize(4);              // Normal 1:1 pixel scale
+        display.setTextColor(SSD1306_WHITE); // Draw white text
+        display.setCursor(64, 16);
+        display.println(tmp);
+        display.setTextSize(2);
+        display.setCursor(112, 32);
+        display.println("C");
+      }
+    else if (cond_txt == "Rain")
+      {
+        draw_weather(1);
+        display.setTextSize(4);              // Normal 1:1 pixel scale
+        display.setTextColor(SSD1306_WHITE); // Draw white text
+        display.setCursor(64, 16);
+        display.println(tmp);
+        display.setTextSize(2);
+        display.setCursor(112, 32);
+        display.println("C");
+      }
+    else if (cond_txt == "Overcast")
+      {
+        draw_weather(2);
+        display.setTextSize(4);              // Normal 1:1 pixel scale
+        display.setTextColor(SSD1306_WHITE); // Draw white text
+        display.setCursor(64, 16);
+        display.println(tmp);
+        display.setTextSize(2);
+        display.setCursor(112, 32);
+        display.println("C");
+      }
+    else 
+    {
     display.setTextSize(2);              // Normal 1:1 pixel scale
     display.setTextColor(SSD1306_WHITE); // Draw white text
     display.setCursor(0, 0);             // Start at top-left corner
     display.println(cond_txt);
-    display.setCursor(0, 20); // Start at top-left corner
-    display.println(tmp + " C " + hum + "%");
-    display.setCursor(0, 40); // Start at top-left corner
-    display.println("Wind:" + wind_dir);
+    display.setCursor(86, 48); // Start at top-left corner
+    display.println("C"); 
+    display.setTextSize(4);
+    display.setCursor(32, 32); // Start at top-left corner
+    display.println(tmp);
+    }
+   
     display.display();
+  
 }
 
 void logoshow(void)
@@ -239,11 +278,11 @@ void draw_weather(int a)
     default:
         icon = sun;
     }
-    display.clearDisplay();
+    //display.clearDisplay();
 
     display.drawBitmap(0, 0, icon, ICON_W, ICON_H, 1);
-    display.display();
-    delay(1000);
+//    display.display();
+//    delay(1000);
 }
 
 // optional
