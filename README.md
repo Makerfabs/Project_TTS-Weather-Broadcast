@@ -17,6 +17,16 @@ Note:
 
 ![1](md_pic/main.jpg)
 
+
+
+**If you're from Hackster or Instructables or something like that.The code is under branch "gray", and this description is for the "master" branch. **
+
+**Branch "gray"** can show weather icon.
+
+![gray](md_pic/icon_weather.jpg)
+
+
+
 [toc]
 
 
