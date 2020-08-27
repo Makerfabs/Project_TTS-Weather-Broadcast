@@ -26,7 +26,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 Speech audio;
 
 //WIFI
-const char *ssid = "Makerfabs"*;
+const char *ssid = "Makerfabs";
 const char *password = "20160704";
 
 const int Pin_mute = 35;
